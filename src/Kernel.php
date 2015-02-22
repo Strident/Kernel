@@ -12,6 +12,9 @@
 
 namespace Strident\Kernel;
 
+use ReflectionObject;
+use Strident\Container\Container;
+use Strident\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -28,6 +31,11 @@ class Kernel implements KernelInterface
     protected $booted;
 
     /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
+    /**
      * @var bool
      */
     protected $debug;
@@ -36,6 +44,11 @@ class Kernel implements KernelInterface
      * @var string
      */
     protected $environment;
+
+    /**
+     * @var string
+     */
+    protected $rootDirectory;
 
 
     /**
@@ -69,7 +82,7 @@ class Kernel implements KernelInterface
      */
     public function boot()
     {
-        // @todo: Initialise other components (container, etc)
+        $this->initialiseContainer();
 
         $this->booted = true;
     }
@@ -82,6 +95,16 @@ class Kernel implements KernelInterface
     public function isBooted()
     {
         return $this->booted;
+    }
+
+    /**
+     * getContainer
+     *
+     * @return ContainerInterface
+     */
+    public function getContainer()
+    {
+        return $this->container;
     }
 
     /**
@@ -100,5 +123,30 @@ class Kernel implements KernelInterface
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * Get kernel root directory
+     *
+     * @return string
+     */
+    public function getRootDirectory()
+    {
+        if (null === $this->rootDirectory) {
+            $reflection = new ReflectionObject($this);
+            $this->rootDirectory = str_replace("\\", "/", dirname($reflection->getFileName()));
+        }
+
+        return $this->rootDirectory;
+    }
+
+    /**
+     * Initialise the container
+     *
+     * @return ContainerInterface
+     */
+    protected function initialiseContainer()
+    {
+        return $this->container = new Container();
     }
 }

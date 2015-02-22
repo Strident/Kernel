@@ -13,6 +13,7 @@
 namespace Strident\Kernel;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Kernel Interface
@@ -41,7 +42,10 @@ interface KernelInterface
     /**
      * Serve a request, with a response
      *
-     * @return
+     * @param Request $request
+     * @param int     $type
+     *
+     * @return Response
      */
     public function serve(Request $request, $type = self::MASTER_REQUEST);
 }
