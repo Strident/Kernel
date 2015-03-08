@@ -25,6 +25,7 @@ interface KernelInterface
     const MASTER_REQUEST = 1;
     const SUB_REQUEST = 2;
 
+
     /**
      * Boot the application kernel
      *
