@@ -43,10 +43,11 @@ interface KernelInterface
     /**
      * Serve a request, with a response
      *
-     * @param Request $request
-     * @param int     $type
+     * @param Request  $request
+     * @param Response $response
+     * @param int      $type
      *
      * @return Response
      */
-    public function serve(Request $request, $type = self::MASTER_REQUEST);
+    public function serve(Request $request, Response $response, $type = self::MASTER_REQUEST);
 }

@@ -13,8 +13,8 @@
 namespace Strident\Kernel;
 
 use Exception;
-use Strident\Kernel\Module\ModuleInterface;
 use ReflectionObject;
+use Strident\Kernel\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -56,6 +56,11 @@ abstract class AbstractKernel implements KernelInterface
     protected $modules;
 
     /**
+     * @var object
+     */
+    protected $requestStack;
+
+    /**
      * @var string
      */
     protected $rootDirectory;
@@ -80,6 +85,7 @@ abstract class AbstractKernel implements KernelInterface
         $this->debug = $debug;
         $this->environment = $environment;
         $this->requestStack = new $requestStackClass();
+        $this->safeMode = false;
     }
 
     /**
@@ -90,11 +96,50 @@ abstract class AbstractKernel implements KernelInterface
      *
      * @return Response
      */
-    public function serve(Request $request, $type = KernelInterface::MASTER_REQUEST)
+    public function serve(Request $request, Response $response, $type = KernelInterface::MASTER_REQUEST)
     {
+        try {
+            $response = $this->processRequest($request, $response, $type);
+        } catch (Exception $e) {
+            $response = $this->processException($e, $request, $response, $type);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Attempt to process a request
+     *
+     * @param Request  $request
+     * @param Response $response
+     * @param int      $type
+     *
+     * @return Response
+     */
+    public function processRequest(Request $request, Response $response, $type)
+    {
+        $this->requestStack->push($request);
+
         if (!$this->isBooted()) {
             $this->boot();
         }
+
+        return new Response("Hello world!", 200);
+    }
+
+    /**
+     * Attempt to process an exception
+     *
+     * @param Exception $e
+     * @param Request   $request
+     * @param Response  $response
+     * @param int       $type
+     *
+     * @return Response
+     */
+    public function processException(Exception $e, Request $request, Response $response, $type)
+    {
+        return new Response("Oh no!", 500);
     }
 
     /**
@@ -139,11 +184,11 @@ abstract class AbstractKernel implements KernelInterface
      */
     public function getConfigurationDirectory()
     {
-        return $this->getRootDirectory() . "/config";
+        return $this->getRootDirectory() . "/config/";
     }
 
     /**
-     * getContainer
+     * Get container
      *
      * @return object
      */
@@ -187,7 +232,7 @@ abstract class AbstractKernel implements KernelInterface
      */
     public function getLogDirectory()
     {
-        return $this->getRootDirectory() . "/logs";
+        return $this->getRootDirectory() . "/logs/";
     }
 
     /**
