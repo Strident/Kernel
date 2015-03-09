@@ -12,8 +12,6 @@
 
 namespace Strident\Kernel;
 
-use Exception;
-use ReflectionObject;
 use Strident\Kernel\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,7 +98,7 @@ abstract class AbstractKernel implements KernelInterface
     {
         try {
             $response = $this->processRequest($request, $response, $type);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $response = $this->processException($e, $request, $response, $type);
         }
 
@@ -130,14 +128,14 @@ abstract class AbstractKernel implements KernelInterface
     /**
      * Attempt to process an exception
      *
-     * @param Exception $e
-     * @param Request   $request
-     * @param Response  $response
-     * @param int       $type
+     * @param \Exception $e
+     * @param Request    $request
+     * @param Response   $response
+     * @param int        $type
      *
      * @return Response
      */
-    public function processException(Exception $e, Request $request, Response $response, $type)
+    public function processException(\Exception $e, Request $request, Response $response, $type)
     {
         return new Response("Oh no!", 500);
     }
@@ -157,7 +155,7 @@ abstract class AbstractKernel implements KernelInterface
             $this->initialiseConfiguration();
             $this->initialiseContainer();
             $this->initialiseModules();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->setSafeMode(true);
             $this->boot();
 
@@ -263,7 +261,7 @@ abstract class AbstractKernel implements KernelInterface
     public function getRootDirectory()
     {
         if (null === $this->rootDirectory) {
-            $reflection = new ReflectionObject($this);
+            $reflection = new \ReflectionObject($this);
             $this->rootDirectory = str_replace("\\", "/", dirname($reflection->getFileName()));
         }
 
