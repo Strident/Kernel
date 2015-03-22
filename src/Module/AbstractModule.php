@@ -13,16 +13,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Module;
+namespace Strident\Component\Kernel\Module;
 
-use Strident\Kernel\Module\ModuleInterface;
+use Strident\Component\Kernel\KernelInterface;
 
 /**
  * AbstractModule
  *
  * @author Elliot Wright <elliot@elliotwright.co>
  */
-abstract class AbstractModule implements ModuleInterface
+abstract class AbstractModule implements ConsoleModuleInterface, ModuleInterface
 {
     /**
      * @var string
@@ -38,9 +38,8 @@ abstract class AbstractModule implements ModuleInterface
     /**
      * {@inheritDoc}
      */
-    public function build()
+    public function build(KernelInterface $kernel)
     {
-        // TODO: Implement build() method.
     }
 
     /**
@@ -69,5 +68,17 @@ abstract class AbstractModule implements ModuleInterface
         }
 
         return $this->path;
+    }
+
+    public function registerConfiguration()
+    {
+    }
+
+    public function registerCommands()
+    {
+    }
+
+    public function registerServices()
+    {
     }
 }

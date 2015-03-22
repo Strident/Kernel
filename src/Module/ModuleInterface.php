@@ -13,7 +13,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Strident\Kernel\Module;
+namespace Strident\Component\Kernel\Module;
+
+use Strident\Component\Kernel\KernelInterface;
 
 /**
  * ModuleInterface
@@ -25,9 +27,11 @@ interface ModuleInterface
     /**
      * Boot this module
      *
+     * @param KernelInterface $kernel
+     *
      * @return void
      */
-    public function build();
+    public function build(KernelInterface $kernel);
 
     /**
      * Get name

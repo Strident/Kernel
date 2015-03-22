@@ -13,9 +13,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Strident\Kernel;
+namespace Strident\Component\Kernel;
 
-use Strident\Kernel\Module\ModuleInterface;
+use Strident\Component\Kernel\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -92,8 +92,9 @@ abstract class AbstractKernel implements KernelInterface
     /**
      * Serve a request, and provide a response.
      *
-     * @param Request $request
-     * @param int     $type
+     * @param Request  $request
+     * @param Response $response
+     * @param int      $type
      *
      * @return Response
      */
@@ -341,8 +342,7 @@ abstract class AbstractKernel implements KernelInterface
 
         foreach ($this->getModules() as $module) {
             if ($module instanceof ModuleInterface) {
-                $module->setContainer($this->getContainer());
-                $module->boot();
+                $module->build($this);
             }
         }
     }

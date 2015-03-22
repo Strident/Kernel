@@ -13,22 +13,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Strident\Component\Kernel;
+namespace Strident\Component\Kernel\Module;
 
 /**
- * AppKernel
+ * ConsoleModuleInterface
  *
  * @author Elliot Wright <elliot@elliotwright.co>
  */
-class AppKernel extends AbstractKernel
+interface ConsoleModuleInterface
 {
     /**
-     * {@inheritDoc}
+     * Register module commands
+     *
+     * @return void
      */
-    public function registerModules($environment)
-    {
-        $modules = [];
-
-        $this->modules = $modules;
-    }
+    public function registerCommands();
 }
