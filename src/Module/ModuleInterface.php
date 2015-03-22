@@ -3,8 +3,11 @@
 /**
  * This file is part of the Kernel package.
  *
- * @author Elliot Wright <elliot@elliotwright.co>
- * @package Kernel
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -15,7 +18,7 @@ namespace Strident\Kernel\Module;
 /**
  * ModuleInterface
  *
- * @author Elliot Wright
+ * @author Elliot Wright <elliot@elliotwright.co>
  */
 interface ModuleInterface
 {
@@ -24,12 +27,19 @@ interface ModuleInterface
      *
      * @return void
      */
-    public function boot();
+    public function build();
 
     /**
-     * setContainer
+     * Get name
      *
-     * @return $this
+     * @return string
      */
-    public function setContainer();
+    public function getName();
+
+    /**
+     * Get path
+     *
+     * @return string
+     */
+    public function getPath();
 }
