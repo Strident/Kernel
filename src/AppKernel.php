@@ -23,12 +23,14 @@ namespace Strident\Component\Kernel;
 class AppKernel extends AbstractKernel
 {
     /**
-     * {@inheritDoc}
+     * Register modules
+     *
+     * @param string $environment
+     *
+     * @return void
      */
     public function registerModules($environment)
     {
-        $modules = [];
-
-        $this->modules = $modules;
+        // TODO: Implement registerModules() method.
     }
 }

@@ -15,6 +15,7 @@
 
 namespace Strident\Component\Kernel;
 
+use Strident\Component\Kernel\Module\ConsoleModuleInterface;
 use Strident\Component\Kernel\Module\ModuleInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,7 +30,7 @@ abstract class AbstractKernel implements KernelInterface
     /**
      * @var bool
      */
-    protected $booted;
+    private $booted;
 
     /**
      * @var mixed
@@ -57,19 +58,14 @@ abstract class AbstractKernel implements KernelInterface
     protected $modules;
 
     /**
-     * @var object
-     */
-    protected $requestStack;
-
-    /**
      * @var string
      */
-    protected $rootDirectory;
+    protected $path;
 
     /**
-     * @var bool
+     * @var object
      */
-    protected $safeMode;
+    private $requestStack;
 
 
     /**
@@ -86,7 +82,6 @@ abstract class AbstractKernel implements KernelInterface
         $this->debug = $debug;
         $this->environment = $environment;
         $this->requestStack = new $requestStackClass();
-        $this->safeMode = false;
     }
 
     /**
@@ -147,7 +142,7 @@ abstract class AbstractKernel implements KernelInterface
     /**
      * {@inheritDoc}
      */
-    public function boot()
+    public function boot($safe = false)
     {
         if ($this->isBooted()) {
             return;
@@ -160,8 +155,7 @@ abstract class AbstractKernel implements KernelInterface
             $this->initialiseContainer();
             $this->initialiseModules();
         } catch (\Exception $e) {
-            $this->setSafeMode(true);
-            $this->boot();
+            $this->boot(true);
 
             throw $e;
         }
@@ -176,7 +170,7 @@ abstract class AbstractKernel implements KernelInterface
      */
     public function getCacheDirectory()
     {
-        return $this->getRootDirectory() . "/cache/" . $this->getEnvironment();
+        return $this->getPath() . "/cache/" . $this->getEnvironment();
     }
 
     /**
@@ -186,7 +180,7 @@ abstract class AbstractKernel implements KernelInterface
      */
     public function getConfigurationDirectory()
     {
-        return $this->getRootDirectory() . "/config/";
+        return $this->getPath() . "/config/";
     }
 
     /**
@@ -204,7 +198,7 @@ abstract class AbstractKernel implements KernelInterface
      *
      * @return string
      */
-    public function getContainerClass()
+    final public function getContainerClass()
     {
         return "Strident\\Container\\Container";
     }
@@ -222,7 +216,7 @@ abstract class AbstractKernel implements KernelInterface
      *
      * @return string
      */
-    public function getExtension()
+    final public function getExtension()
     {
         return ".php";
     }
@@ -234,7 +228,7 @@ abstract class AbstractKernel implements KernelInterface
      */
     public function getLogDirectory()
     {
-        return $this->getRootDirectory() . "/logs/";
+        return $this->getPath() . "/logs/";
     }
 
     /**
@@ -248,38 +242,28 @@ abstract class AbstractKernel implements KernelInterface
     }
 
     /**
-     * Get request stack class
-     *
-     * @return string
-     */
-    public function getRequestStackClass()
-    {
-        return "Symfony\\Component\\HttpFoundation\\RequestStack";
-    }
-
-    /**
      * Get kernel root directory
      *
      * @return string
      */
-    public function getRootDirectory()
+    public function getPath()
     {
-        if (null === $this->rootDirectory) {
+        if (null === $this->path) {
             $reflection = new \ReflectionObject($this);
-            $this->rootDirectory = str_replace("\\", "/", dirname($reflection->getFileName()));
+            $this->path = str_replace("\\", "/", dirname($reflection->getFileName()));
         }
 
-        return $this->rootDirectory;
+        return $this->path;
     }
 
     /**
-     * Get safeMode
+     * Get request stack class
      *
-     * @return bool
+     * @return string
      */
-    public function getSafeMode()
+    final public function getRequestStackClass()
     {
-        return $this->safeMode;
+        return "Symfony\\Component\\HttpFoundation\\RequestStack";
     }
 
     /**
@@ -297,7 +281,7 @@ abstract class AbstractKernel implements KernelInterface
      *
      * @return bool
      */
-    public function isDebug()
+    final public function isDebug()
     {
         return $this->debug;
     }
@@ -344,6 +328,10 @@ abstract class AbstractKernel implements KernelInterface
             if ($module instanceof ModuleInterface) {
                 $module->build($this);
             }
+
+            if ($module instanceof ConsoleModuleInterface) {
+                $module->registerCommands($this);
+            }
         }
     }
 
@@ -355,18 +343,4 @@ abstract class AbstractKernel implements KernelInterface
      * @return void
      */
     abstract public function registerModules($environment);
-
-    /**
-     * Set safeMode
-     *
-     * @param bool $safeMode
-     *
-     * @return $this
-     */
-    public function setSafeMode($safeMode)
-    {
-        $this->safeMode = $safeMode;
-
-        return $this;
-    }
 }
